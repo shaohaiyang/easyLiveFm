@@ -77,7 +77,20 @@ fmList.addEventListener('change', () => {
 document.getElementById('saveBtn').addEventListener('click', () => {
     const name = fmNameInput.value.trim();
     const code = fmCodeInput.value.trim();
-    if (!name || !code) return;
+  // --- Bug 修复：数字校验逻辑 ---
+  if (!name) {
+    alert("请输入电台名称哦~");
+    return;
+  }
+  
+  // 使用正则表达式测试是否为纯数字
+  const isPureNumber = /^\d+$/.test(code);
+  if (!code || !isPureNumber) {
+    alert("电台 ID 必须是纯数字（例如：4915），请检查一下~");
+    fmCodeInput.focus(); // 自动聚焦到输入框方便修改
+    return;
+  }
+  // ---------------------------
 
   chrome.storage.local.get(['myFms'], (res) => {
         let list = res.myFms || [...DEFAULT_FMS];
