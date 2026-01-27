@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* 小清新渐变背景 */
+    body { 
+      width: 300px; 
+      margin: 0;
+      padding: 15px; 
+      font-family: "Microsoft YaHei", sans-serif; 
+      background: linear-gradient(135deg, #e0f7fa 0%, #f1f8e9 100%);
+      color: #37474f;
+    }
+
+    /* 顶部标题栏 */
+    .header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 15px;
+    }
+    .header strong { font-size: 18px; color: #00796b; }
+
+    /* 下拉框美化 */
+    .fm-container {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+    }
+    select { 
+      width: 100%; 
+      padding: 8px; 
+      border-radius: 8px; 
+      border: 1px solid #b2dfdb;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* 按钮基础样式 */
+    button { 
+      cursor: pointer; 
+      border: none; 
+      border-radius: 6px; 
+      padding: 6px 12px; 
+      transition: all 0.2s;
+      font-size: 13px;
+    }
+    button:active { transform: scale(0.95); }
+
+    /* 功能颜色区分 */
+    #showAddBtn { background: #4db6ac; color: white; } /* 新增-青色 */
+    #showAddBtn:hover { background: #26a69a; }
+
+    #editBtn { background: #fff9c4; color: #f57f17; border: 1px solid #fbc02d; } /* 修改-淡黄 */
+    #delBtn { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; } /* 删除-淡红 */
+
+    .main-controls { 
+      display: flex; 
+      justify-content: center; 
+      gap: 15px; 
+      margin: 20px 0 10px;
+    }
+    #playBtn { 
+      background: #81c784; color: white; font-size: 16px; padding: 10px 25px;
+      box-shadow: 0 4px 10px rgba(129, 199, 132, 0.4);
+    }
+    #pauseBtn { background: #cfd8dc; color: #546e7a; font-size: 16px; padding: 10px 25px; }
+
+    /* 编辑区域 */
+    #addArea { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 15px; 
+      margin-top: 15px;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+      display: none; 
+    }
+    input { 
+      width: 90%; 
+      margin-bottom: 10px; 
+      padding: 8px; 
+      border: 1px solid #eee; 
+      border-radius: 6px; 
+      outline-color: #4db6ac;
+    }
+
+    /* 状态提示词 */
+    #status { 
+      font-size: 12px; 
+      color: #78909c; 
+      text-align: center; 
+      min-height: 18px;
+      font-style: italic;
+    }
+    .hint { font-size: 11px; color: #90a4ae; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong>🍃 清新电台</strong>
+    <button id="showAddBtn">+ 添加频道</button>
+  </div>
+  
+  <div class="fm-container">
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+      <select id="fmList"></select>
+      <div style="display: flex; gap: 4px;">
+        <button id="editBtn">✏️</button>
+        <button id="delBtn">❌</button>
+      </div>
+    </div>
+
+    <div class="main-controls">
+      <button id="playBtn">▶ 开启音乐</button>
+      <button id="pauseBtn">⏸ 休息</button>
+    </div>
+    
+    <div id="status">准备绪，选个台听听吧~</div>
+  </div>
+
+  <!-- 新增/编辑区域 -->
+  <div id="addArea">
+    <div style="margin-bottom:10px; font-weight:bold; color:#00796b;">设置频道信息</div>
+    <input type="text" id="fmName" placeholder="起个好听的名字...">
+    <input type="text" id="fmCode" placeholder="输入电台 ID (如 4915)">
+    <div style="text-align:right; margin-top:5px; display:flex; justify-content: flex-end; gap:8px;">
+      <button id="cancelBtn" style="background:#eee;">取消</button>
+      <button id="saveBtn" style="background:#4db6ac; color:white;">确认保存</button>
+    </div>
+  </div>
+
+  <div class="hint">Tip: 关闭窗口音乐也会继续陪伴你</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
