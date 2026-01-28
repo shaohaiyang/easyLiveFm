@@ -1,7 +1,13 @@
 let audio = new Audio();
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target !== 'offscreen') return;
+
+  if (message.type === 'check-real-status') {
+    // 检查 audio 对象是否存在且未暂停
+    const isActuallyPlaying = audio && !audio.paused && audio.readyState > 0;
+    sendResponse({ playing: isActuallyPlaying });
+  }
 
   if (message.type === 'play') {
     // 强制重置之前的连接，防止流阻塞
@@ -16,3 +22,7 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
+// 在 offscreen.js 中给 audio 对象加个监听
+audio.onended = () => {
+    chrome.runtime.sendMessage({ type: 'stop' }); // 通知 background 更新 isPlaying 变量
+};
