@@ -17,6 +17,48 @@ const fmCodeInput = document.getElementById('fmCode');
 const statusText = document.getElementById('status');
 let editingIndex = null;
 
+let isPlaying = false; // 记录播放状态
+const toggleBtn = document.getElementById('toggleBtn');
+
+// 监听按钮点击
+toggleBtn.addEventListener('click', () => {
+  const url = fmList.value;
+  const name = fmList.options[fmList.selectedIndex].text;
+
+  if (!isPlaying) {
+    // --- 执行播放逻辑 ---
+    chrome.storage.local.set({ lastSelected: url });
+    chrome.runtime.sendMessage({
+      type: 'play',
+      url: url
+    });
+
+    // 切换 UI
+    isPlaying = true;
+    toggleBtn.textContent = "⏸ 休息一下";
+    toggleBtn.className = "stop-state";
+    statusText.textContent = "🎶 正在播：" + name;
+  } else {
+    // --- 执行停止逻辑 ---
+    chrome.runtime.sendMessage({ type: 'stop' });
+
+    // 切换 UI
+    isPlaying = false;
+    toggleBtn.textContent = "▶ 开启音乐";
+    toggleBtn.className = "play-state";
+    statusText.textContent = "已停止，休息中...";
+  }
+});
+
+// 优化：当用户切换下拉框时，如果正在播放，自动切换到新台
+fmList.addEventListener('change', () => {
+  if (isPlaying) {
+    const url = fmList.value;
+    chrome.runtime.sendMessage({ type: 'play', url: url });
+    statusText.textContent = "🎶 已切台：" + fmList.options[fmList.selectedIndex].text;
+  }
+});
+
 // 1. 初始化渲染：增加“恢复选中状态”逻辑
 function renderList() {
     // 同时获取电台列表和上次选中的值
@@ -49,21 +91,7 @@ function renderList() {
     }
       
   });
-
 }
-
-// 2. 播放逻辑：增加“保存当前选中”逻辑
-document.getElementById('playBtn').addEventListener('click', () => {
-    const url = fmList.value;
-    const name = fmList.options[fmList.selectedIndex].text;
-    
-    // 记录最后一次播放的 URL
-    chrome.storage.local.set({ lastSelected: url  });
-    
-    chrome.runtime.sendMessage({ type: 'play', url: url  });
-    statusText.textContent = "正在播：" + name;
-
-});
 
 // 3. 列表切换逻辑：切换时也即时保存位置（可选）
 fmList.addEventListener('change', () => {
@@ -135,12 +163,6 @@ document.getElementById('editBtn').addEventListener('click', () => {
 
 });
 
-document.getElementById('pauseBtn').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'stop'  });
-    statusText.textContent = "已停止，休息中...";
-
-});
-
 document.getElementById('showAddBtn').addEventListener('click', () => {
     editingIndex = null;
     fmNameInput.value = '';
@@ -150,5 +172,14 @@ document.getElementById('showAddBtn').addEventListener('click', () => {
 });
 
 document.getElementById('cancelBtn').addEventListener('click', () => addArea.style.display = 'none');
+
+// 每次打开弹窗，询问 background 当前是否在播放
+chrome.runtime.sendMessage({ type: 'get-status' }, (response) => {
+  if (response && response.playing) {
+    isPlaying = true;
+    toggleBtn.textContent = "⏸ 休息一下";
+    toggleBtn.className = "stop-state";
+  }
+});
 
 renderList();

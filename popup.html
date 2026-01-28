@@ -64,11 +64,6 @@
       gap: 15px; 
       margin: 20px 0 10px;
     }
-    #playBtn { 
-      background: #81c784; color: white; font-size: 16px; padding: 10px 25px;
-      box-shadow: 0 4px 10px rgba(129, 199, 132, 0.4);
-    }
-    #pauseBtn { background: #cfd8dc; color: #546e7a; font-size: 16px; padding: 10px 25px; }
 
     /* 编辑区域 */
     #addArea { 
@@ -97,14 +92,50 @@
       font-style: italic;
     }
     .hint { font-size: 11px; color: #90a4ae; text-align: center; margin-top: 10px; }
+
+/* 播放状态的样式 */
+.play-state {
+		background: #81c784; color: white; font-size: 16px; padding: 10px 25px;
+		box-shadow: 0 4px 10px rgba(129, 199, 132, 0.4);
+	}
+
+/* 停止状态的样式 */
+.stop-state {
+		background: #cfd8dc; color: #546e7a; font-size: 16px; padding: 10px 25px;
+	}
+
+#githubLink:hover svg {
+  transform: scale(1.2);
+  filter: drop-shadow(0 4px 8px rgba(255,82,82,0.5));
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 呼吸灯特效，若隐若现的诱惑点赞 */
+@keyframes heartBeat {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(0.9); }
+}
+
+#githubLink svg {
+  animation: heartBeat 2s infinite ease-in-out;
+}
   </style>
 </head>
 <body>
-  <div class="header">
-    <strong>🍃 清新电台</strong>
-    <button id="showAddBtn">+ 添加频道</button>
+ <div class="header">
+  <strong>🍃 清新电台</strong>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <!-- GitHub 点赞链接 -->
+    <a href="https://github.com/shaohaiyang/easyLiveFm" target="_blank" id="githubLink" title="给个 Star 支持一下吧~" style="text-decoration: none; display: flex; align-items: center;">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="fill: #ff5252; filter: drop-shadow(0 2px 4px rgba(255,82,82,0.3));">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+    </a>
+    <button id="showAddBtn">+ 添加电台</button>
   </div>
-  
+</div>
+
   <div class="fm-container">
     <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
       <select id="fmList"></select>
@@ -114,11 +145,11 @@
       </div>
     </div>
 
-    <div class="main-controls">
-      <button id="playBtn">▶ 开启音乐</button>
-      <button id="pauseBtn">⏸ 休息</button>
-    </div>
-    
+<div class="main-controls">
+	<!-- 合并为一个按钮，初始状态为播放 -->
+  <button id="toggleBtn" class="play-state">▶ 开启音乐</button>
+</div>
+
     <div id="status">准备绪，选个台听听吧~</div>
   </div>
 
