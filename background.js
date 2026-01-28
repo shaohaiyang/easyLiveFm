@@ -49,3 +49,42 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // 必须返回 true 或调用 sendResponse 以防止某些浏览器的异步错误
   return true;
 });
+
+// 监听快捷键命令
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "toggle-radio") {
+    const hasDoc = await chrome.offscreen.hasDocument();
+    let isActuallyPlaying = false;
+
+    if (hasDoc) {
+      // 询问离屏文档真实状态
+      const response = await chrome.runtime.sendMessage({
+        target: 'offscreen',
+        type: 'check-real-status'
+      }).catch(() => ({ playing: false }));
+      isActuallyPlaying = response?.playing;
+    }
+
+    if (isActuallyPlaying) {
+      // 如果正在播放，则停止
+      isPlaying = false;
+      chrome.runtime.sendMessage({ target: 'offscreen', type: 'stop' });
+    } else {
+      // 如果停止，则获取上次选中的 URL 并播放
+      chrome.storage.local.get(['lastSelected', 'myVolume'], (res) => {
+        const url = res.lastSelected;
+
+        if (url) {
+          isPlaying = true;
+          createOffscreen().then(() => {
+            chrome.runtime.sendMessage({
+              target: 'offscreen',
+              type: 'play',
+              url: url
+            });
+          });
+        }
+      });
+    }
+  }
+});

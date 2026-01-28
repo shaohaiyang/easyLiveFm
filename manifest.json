@@ -11,6 +11,15 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "commands": {
+    "toggle-radio": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "快捷开启/关闭电台"
+    }
+  },
   "icons": {
     "128": "fmicon.png"
   }
