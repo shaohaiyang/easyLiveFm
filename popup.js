@@ -3,11 +3,14 @@ const MP3 = "64k.mp3";
 const DEFAULT_FMS = [
 	  { name: "清晨音乐台", code: "4915"  },
 	  { name: "两广音乐之声", code: "20500149"  },
-	  { name: "杭州FM 90.7", code: "15318146"  },
-	  { name: "上海流行音乐", code: "273"  },
+	  { name: "珠三角音乐台", code: "4804"  },
+	  { name: "浙江音乐动听968", code: "4866"  },
+	  { name: "上海流行音乐台", code: "273"  },
 	  { name: "成都怀旧音乐台", code: "20211686"  },
-	  { name: "江苏经典流行音乐", code: "4938"  },
-	  { name: "AsiaFM亚洲音乐台", code: "4581"  }
+	  { name: "云梦网络音乐台", code: "20500187"  },
+	  { name: "80后最爱音悦台", code: "20207761"  },
+	  { name: "AsiaFM亚洲音乐台", code: "15318341"  },
+	  { name: "AsiaFM亚洲粤语台", code: "15318569"  }
 ];
 
 const fmList = document.getElementById('fmList');
