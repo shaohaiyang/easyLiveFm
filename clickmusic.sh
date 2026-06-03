@@ -89,6 +89,7 @@ play_url() {
   echo "▶ 播放: $title"
   echo "   播放器: $PLAYER    按 ESC 返回菜单"
   echo ""
+  PLAY_ESC=0
   case "$PLAYER" in
     ffplay) ffplay -nodisp -autoexit -loglevel quiet "$url" 2>/dev/null &
             player_pid=$! ;;
@@ -106,7 +107,7 @@ play_url() {
       wait "$player_pid" 2>/dev/null; break
     fi
     code=$(read_key_raw)
-    [ "$code" = "27" ] && { kill "$player_pid" 2>/dev/null; wait "$player_pid" 2>/dev/null; echo ""; break; }
+    [ "$code" = "27" ] && { kill "$player_pid" 2>/dev/null; wait "$player_pid" 2>/dev/null; echo ""; PLAY_ESC=1; break; }
   done
 }
 
@@ -169,21 +170,32 @@ while true; do
     done
     echo "  0) 返回频道列表"
     echo ""
-    printf "请选择节目 [0-%d]: " "$total_p"
-    read -r prog_choice
+    printf "请选择节目 [0-%d] (10秒后自动播放第一首): " "$total_p"
+    if ! read -t 10 -r prog_choice 2>/dev/null; then
+      echo ""; prog_choice=1
+    fi
     [ -z "$prog_choice" ] && continue
     [ "$prog_choice" = "0" ] && { rm -f "$tmpf"; break; }
     [ "$prog_choice" -ge 1 ] && [ "$prog_choice" -le "$total_p" ] 2>/dev/null || continue
 
-    line=$(sed -n "${prog_choice}p" "$tmpf")
-    pid=$(echo "$line" | cut -f1)
-    ptitle=$(echo "$line" | cut -f2)
+    current=$prog_choice
+    while [ "$current" -le "$total_p" ]; do
+      line=$(sed -n "${current}p" "$tmpf")
+      pid=$(echo "$line" | cut -f1)
+      ptitle=$(echo "$line" | cut -f2)
 
-    echo "🎵 加载音频: $ptitle"
-    audio_url=$(get_audio_url "$cid" "$pid")
-    [ -z "$audio_url" ] && { echo "获取音频链接失败"; sleep 1; continue; }
+      echo "🎵 加载音频: $ptitle"
+      audio_url=$(get_audio_url "$cid" "$pid")
+      if [ -z "$audio_url" ]; then
+        echo "获取音频链接失败，跳过"
+        current=$((current + 1))
+        continue
+      fi
 
-    play_url "$audio_url" "$ptitle"
+      play_url "$audio_url" "$ptitle"
+      [ "$PLAY_ESC" = "1" ] && { PLAY_ESC=0; break; }
+      current=$((current + 1))
+    done
     continue
   done
 done
